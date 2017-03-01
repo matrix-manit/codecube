@@ -4,17 +4,15 @@ import in.ac.manit.matrix.codecube.bo.UserService;
 import in.ac.manit.matrix.codecube.enumerator.DataRowAccessLimit;
 import in.ac.manit.matrix.codecube.enumerator.Gender;
 import in.ac.manit.matrix.codecube.model.User;
+import in.ac.manit.matrix.codecube.utilities.EmailMessageFormat;
+import in.ac.manit.matrix.codecube.utilities.EmailUtil;
+import in.ac.manit.matrix.codecube.utilities.SingletonObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -43,7 +41,7 @@ public class HelloWorldController {
     }
 
 
-    @RequestMapping("/user")
+    @RequestMapping(value = "/user")
     public String addUser(@RequestParam(value = "scholar_number", required = true) Long scholarNumber) {
         User user = new User();
         user.setScholarNumber(scholarNumber);
@@ -58,6 +56,13 @@ public class HelloWorldController {
     @RequestMapping("/hello")
     public String doIt() {
         return "{\'Success\':\'true\'}";
+    }
+
+    @RequestMapping(value = "/mail_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean mailTest(@RequestBody EmailMessageFormat emailMessageFormat)
+    {
+        EmailUtil emailUtil = SingletonObjects.getEmailUtil();
+        return emailUtil.sendMail(emailMessageFormat);
     }
 
     /*@Autowired

@@ -42,6 +42,7 @@
         <beans:property name="annotatedClasses">
             <beans:list>
                 <beans:value>in.ac.manit.matrix.codecube.model.User</beans:value>
+                <beans:value>in.ac.manit.matrix.codecube.utilities.EmailMessageFormat</beans:value>
             </beans:list>
         </beans:property>
 
@@ -59,8 +60,10 @@
     </beans:bean>
 
     <beans:bean id="userService" class="in.ac.manit.matrix.codecube.bo.impl.UserServiceImpl">
-        <beans:property name="userDao" ref="userDao"></beans:property>
+        <beans:property name="userDao" ref="userDao" />
     </beans:bean>
+
+
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 

@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void updateUser(User user) {
-        this.userDao.addUser(user);
+        this.userDao.updateUser(user);
     }
 
     @Transactional

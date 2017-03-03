@@ -64,6 +64,7 @@ public class GmailImpl implements EmailUtil{
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             return false;
         }
         return true;

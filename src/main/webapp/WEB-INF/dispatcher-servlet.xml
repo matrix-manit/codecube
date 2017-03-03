@@ -42,6 +42,8 @@
         <beans:property name="annotatedClasses">
             <beans:list>
                 <beans:value>in.ac.manit.matrix.codecube.model.User</beans:value>
+                <beans:value>in.ac.manit.matrix.codecube.model.PasswordResetRequest</beans:value>
+                <beans:value>in.ac.manit.matrix.codecube.model.Credential</beans:value>
                 <beans:value>in.ac.manit.matrix.codecube.utilities.EmailMessageFormat</beans:value>
             </beans:list>
         </beans:property>
@@ -56,14 +58,27 @@
     </beans:bean>
 
     <beans:bean id="userDao" class="in.ac.manit.matrix.codecube.dao.impl.UserDaoImpl">
-        <beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory"/>
+        <beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
     </beans:bean>
+
+    <beans:bean id="credentialDao" class="in.ac.manit.matrix.codecube.dao.impl.CredentialDaoImpl">
+        <beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+    </beans:bean>
+
+    <beans:bean id="passwordResetRequestDao" class="in.ac.manit.matrix.codecube.dao.impl.PasswordResetRequestDaoImpl">
+        <beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+    </beans:bean>
+
 
     <beans:bean id="userService" class="in.ac.manit.matrix.codecube.bo.impl.UserServiceImpl">
         <beans:property name="userDao" ref="userDao" />
     </beans:bean>
 
-
+    <beans:bean id="authenticationService" class="in.ac.manit.matrix.codecube.bo.impl.AuthenticationServiceImpl">
+        <beans:property name="userDao" ref="userDao" />
+        <beans:property name="credentialDao" ref="credentialDao" />
+        <beans:property name="passwordResetRequestDao" ref="passwordResetRequestDao" />
+    </beans:bean>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 

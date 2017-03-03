@@ -8,6 +8,7 @@ import in.ac.manit.matrix.codecube.constants.UserConstants.TableColumns;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
@@ -23,7 +24,7 @@ import java.sql.Date;
 @JsonInclude(Include.NON_NULL)
 @Table(name = "User")
 @Entity
-public class User {
+public class User implements Serializable {
     @Id
     @Column(name = TableColumns.scholarNumber)
     private Long scholarNumber;

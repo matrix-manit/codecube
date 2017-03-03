@@ -14,6 +14,7 @@ import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ import static in.ac.manit.matrix.codecube.constants.UserConstants.SortableFields
  * @author Mohit Godwani
  */
 @Repository
+@Transactional
 public class UserDaoImpl implements UserDao {
 
     @Setter

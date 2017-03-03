@@ -23,4 +23,6 @@ public interface AuthenticationService {
 	
 
 	public void resetPassword(Long scholarNo, String otp, String rawPassword);
+
+	public boolean sendOtp(Long scholarNo);
 }

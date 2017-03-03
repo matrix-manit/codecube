@@ -1,6 +1,7 @@
 package in.ac.manit.matrix.codecube.bo.impl;
 
 import in.ac.manit.matrix.codecube.bo.AuthenticationService;
+import in.ac.manit.matrix.codecube.bo.UserService;
 import in.ac.manit.matrix.codecube.constants.AuthenticationConstants;
 import in.ac.manit.matrix.codecube.constants.ContactConstants;
 import in.ac.manit.matrix.codecube.dao.CredentialDao;
@@ -9,9 +10,10 @@ import in.ac.manit.matrix.codecube.dao.UserDao;
 import in.ac.manit.matrix.codecube.model.Credential;
 import in.ac.manit.matrix.codecube.model.PasswordResetRequest;
 import in.ac.manit.matrix.codecube.model.User;
-import in.ac.manit.matrix.codecube.utilities.PasswordUtil;
+import in.ac.manit.matrix.codecube.utilities.*;
 
 import lombok.Setter;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -20,10 +22,13 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.Timer;
 
 /**
  * @author Shreesha Prabhu K
  */
+@Service
+@Transactional
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Setter
@@ -43,6 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return <i>true</i> if credentials match else <i>false</i>
      * TODO user not present case to be handled
      */
+    @Transactional
     public boolean isCredentialValid(Long scholarNo, String rawPassword) {
         Credential credential = credentialDao.getCredential(scholarNo);
         String savedHashedPassword = userDao.getPassword(scholarNo);
@@ -91,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } else {
 
             if (!timeValid)
-                passwordResetRequestDao.deletePasswordResetRequest(passwordResetRequest.getScholarNo());
+                passwordResetRequestDao.deletePasswordResetRequest(passwordResetRequest.getUser().getScholarNumber());
 
             else if (!triesValid) {
                 // case when user exhausts no of tries to reset password
@@ -103,7 +109,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
-    public void sendOtp(User user, String otp) {
+    @Transactional
+    public boolean sendOtp(Long scholarNumber) {
+        User user = userDao.getUser(scholarNumber);
+        PasswordResetRequest passwordResetRequest = generatePasswordResetRequest(scholarNumber);
+        String otp = passwordResetRequest.getOneTimePassword();
+        EmailMessageFormat emailMessageFormat = new EmailMessageFormat();
+        emailMessageFormat.setFrom("CodecubeAuthentication");
+        emailMessageFormat.setSubject("OTP for password reset");
+        emailMessageFormat.setTo(user.getEmailAddress());
+        emailMessageFormat.setBody("The OTP for password reset is : " + otp);
+        EmailUtil emailUtil= SingletonObjects.getEmailUtil();
+        boolean mailSent = emailUtil.sendMail(emailMessageFormat);
+        return mailSent;
+    }
+
+    private PasswordResetRequest generatePasswordResetRequest(Long scholarNumber)
+    {
+        Date date = new Date();
+        PasswordUtil passwordUtil = PasswordUtil.getDefault();
+        passwordResetRequestDao.deletePasswordResetRequest(scholarNumber); // delete previous OTP.
+        String otp = passwordUtil.generatePassword().getPassword();
+        PasswordResetRequest passwordResetRequest = new PasswordResetRequest();
+        passwordResetRequest.setRequestTime(new Timestamp(date.getTime()));
+        passwordResetRequest.setOneTimePassword(otp);
+        passwordResetRequest.setUser(userDao.getUser(scholarNumber));
+        passwordResetRequest.setTriesRemaining(3);
+        passwordResetRequestDao.createResetRequest(passwordResetRequest);
+        return passwordResetRequest;
 
     }
 

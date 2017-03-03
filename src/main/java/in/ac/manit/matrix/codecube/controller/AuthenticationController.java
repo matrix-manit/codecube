@@ -11,13 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
-    private AuthenticationService authenticationService;
 
     @Autowired
     @Qualifier(value = "authenticationService")
-    public void setAuthenticationService() {
-        this.authenticationService = authenticationService;
-    }
+    private AuthenticationService authenticationService;
 
     @RequestMapping(value = "/session", method = RequestMethod.PUT)
     public Boolean createSession(@RequestParam(value = "scholar_number") Long scholarNo,
@@ -31,6 +28,4 @@ public class AuthenticationController {
     public Boolean deleteSession(@RequestParam(value = "scholar_number") Long scholarNo) {
         return true;
     }
-
-
 }

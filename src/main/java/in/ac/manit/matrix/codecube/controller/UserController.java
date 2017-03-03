@@ -1,14 +1,19 @@
 package in.ac.manit.matrix.codecube.controller;
 
+import in.ac.manit.matrix.codecube.bo.AuthenticationService;
 import in.ac.manit.matrix.codecube.bo.UserService;
 import in.ac.manit.matrix.codecube.constants.UserConstants.ModelFields;
+import in.ac.manit.matrix.codecube.dao.PasswordResetRequestDao;
 import in.ac.manit.matrix.codecube.enumerator.DataRowAccessLimit;
 import in.ac.manit.matrix.codecube.enumerator.Gender;
 import in.ac.manit.matrix.codecube.enumerator.OrderBy;
 import in.ac.manit.matrix.codecube.exception.CodecubeRuntimeException;
+import in.ac.manit.matrix.codecube.model.PasswordResetRequest;
 import in.ac.manit.matrix.codecube.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +35,10 @@ public class UserController {
     @Autowired
     @Qualifier("userService")
     private UserService userService;
+
+    @Autowired
+    @Qualifier("authenticationService")
+    private AuthenticationService authenticationService;
 
     @RequestMapping("/")
     public List<User> listUsers(@RequestParam(defaultValue = "0") Integer offset,
@@ -65,8 +74,15 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{scholarNumber}", method = {RequestMethod.PUT})
-    public User updateUserPassword(@PathVariable Long scholarNumber, HttpServletRequest request) {
+    public User resetUserPassword(@PathVariable Long scholarNumber, HttpServletRequest request) {
         return null;
+    }
+
+    @RequestMapping(value =  "/forgotpassword", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean forgotUserPassword(@RequestBody Long scholarNumber)
+    {
+        System.out.println(scholarNumber);
+        return this.authenticationService.sendOtp(scholarNumber);
     }
 
     private HttpSession getSession(HttpServletRequest request) {

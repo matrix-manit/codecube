@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -20,10 +21,11 @@ import java.sql.Timestamp;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Table (name = "PasswordResetRequest")
 @Entity
-public class PasswordResetRequest {
+public class PasswordResetRequest implements Serializable {
     @OneToOne
-    @JoinColumn(table = "User", referencedColumnName = "ScholarNo")
-    private Long scholarNo;
+    @Id
+    @JoinColumn(name = "ScholarNo", referencedColumnName = "ScholarNo")
+    private User user;
 
     @Column(name = "RequestTime")
     private Timestamp requestTime;
@@ -33,6 +35,4 @@ public class PasswordResetRequest {
 
     @Column(name = "TriesRemaining")
     private Integer triesRemaining;
-
-
 }

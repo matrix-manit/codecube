@@ -1,9 +1,7 @@
 package in.ac.manit.matrix.codecube.bo.impl;
 
 import in.ac.manit.matrix.codecube.bo.AuthenticationService;
-import in.ac.manit.matrix.codecube.bo.UserService;
 import in.ac.manit.matrix.codecube.constants.AuthenticationConstants;
-import in.ac.manit.matrix.codecube.constants.ContactConstants;
 import in.ac.manit.matrix.codecube.dao.CredentialDao;
 import in.ac.manit.matrix.codecube.dao.PasswordResetRequestDao;
 import in.ac.manit.matrix.codecube.dao.UserDao;
@@ -19,10 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.Timer;
 
 /**
  * @author Shreesha Prabhu K
@@ -73,12 +69,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         credential.setScholarNo(scholarNo);
         credential.setSalt(passwordBundle.getSalt());
 
-        credentialDao.updateCredential(credential);
+        credentialDao.addCredential(credential);
         userDao.setPassword(scholarNo, passwordBundle.getHashedPassword());
     }
 
     @Transactional
-    public void resetPassword(Long scholarNo, String otp, String rawPassword) {
+    public boolean resetPassword(Long scholarNo, String otp, String rawPassword) {
         PasswordResetRequest passwordResetRequest = this.passwordResetRequestDao.getPasswordResetRequest(scholarNo);
         Date date = new Date();
         Boolean otpValid, timeValid, triesValid;
@@ -94,10 +90,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         triesValid = triesRemaining > 0;
         if (otpValid && timeValid && triesValid) {
             setCredentials(scholarNo, rawPassword);
+            return true;
         } else {
 
             if (!timeValid)
+            {
                 passwordResetRequestDao.deletePasswordResetRequest(passwordResetRequest.getUser().getScholarNumber());
+            }
 
             else if (!triesValid) {
                 // case when user exhausts no of tries to reset password
@@ -105,6 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 passwordResetRequest.setTriesRemaining(triesRemaining - 1);
                 passwordResetRequestDao.updatePasswordResetRequest(passwordResetRequest);
             }
+            return false;
         }
 
     }

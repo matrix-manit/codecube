@@ -1,9 +1,6 @@
 # This script should be run from same directory as your project base directory.
 # You may need to adjust the directories if needed.
 
-#Build the package
-mvn clean package
-
 # Stop Tomcat
 sudo service tomcat7 stop
 

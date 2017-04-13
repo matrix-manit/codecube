@@ -22,7 +22,7 @@ public interface AuthenticationService {
 	public void setCredentials(Long scholarNo, String rawPassword);
 	
 
-	public void resetPassword(Long scholarNo, String otp, String rawPassword);
+	public boolean resetPassword(Long scholarNo, String otp, String rawPassword);
 
 	public boolean sendOtp(Long scholarNo);
 }

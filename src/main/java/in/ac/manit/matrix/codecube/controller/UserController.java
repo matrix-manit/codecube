@@ -3,21 +3,23 @@ package in.ac.manit.matrix.codecube.controller;
 import in.ac.manit.matrix.codecube.bo.AuthenticationService;
 import in.ac.manit.matrix.codecube.bo.UserService;
 import in.ac.manit.matrix.codecube.constants.UserConstants.ModelFields;
-import in.ac.manit.matrix.codecube.dao.PasswordResetRequestDao;
+
 import in.ac.manit.matrix.codecube.enumerator.DataRowAccessLimit;
 import in.ac.manit.matrix.codecube.enumerator.Gender;
 import in.ac.manit.matrix.codecube.enumerator.OrderBy;
 import in.ac.manit.matrix.codecube.exception.CodecubeRuntimeException;
-import in.ac.manit.matrix.codecube.model.PasswordResetRequest;
+
 import in.ac.manit.matrix.codecube.model.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Required;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import java.util.List;
 
 import static in.ac.manit.matrix.codecube.constants.UserConstants.SortableFields;
@@ -39,6 +41,8 @@ public class UserController {
     @Autowired
     @Qualifier("authenticationService")
     private AuthenticationService authenticationService;
+
+
 
     @RequestMapping("/")
     public List<User> listUsers(@RequestParam(defaultValue = "0") Integer offset,
@@ -84,6 +88,14 @@ public class UserController {
         System.out.println(scholarNumber);
         return this.authenticationService.sendOtp(scholarNumber);
     }
+
+    @RequestMapping(value = "/resetpassword", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean resetUserPassword(@RequestBody ResetPasswordStruct resetPasswordStruct)
+    {
+
+        return authenticationService.resetPassword(resetPasswordStruct.getScholarNumber(), resetPasswordStruct.getOtp(), resetPasswordStruct.getNewPassword());
+    }
+
 
     private HttpSession getSession(HttpServletRequest request) {
         return request.getSession(false);

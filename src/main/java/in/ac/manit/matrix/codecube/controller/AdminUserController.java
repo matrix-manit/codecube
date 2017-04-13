@@ -20,17 +20,17 @@ public class AdminUserController {
     @Qualifier("userService")
     private UserService userService;
 
-    private ObjectMapper objectMapper;
+
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean addUser(@RequestBody User user)
     {
         // TODO validate User object.
         // TODO How to verify whether User persisted.
-        objectMapper = SingletonObjects.getObjectMapper();
+
 
         try {
-            //User user = objectMapper.readValue(userJson, User.class);
+           
             userService.addUser(user);
         }
         catch (Exception e)

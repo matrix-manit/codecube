@@ -26,7 +26,7 @@ public class PasswordResetRequestDaoImpl implements PasswordResetRequestDao {
         return (PasswordResetRequest)this.sessionFactory
                 .getCurrentSession()
                 .createCriteria(PasswordResetRequest.class)
-                .add(Restrictions.eq("ScholarNo", scholarNo))
+                .add(Restrictions.eq("user.scholarNumber", scholarNo))
                 .uniqueResult();
     }
 

@@ -1,5 +1,7 @@
 package in.ac.manit.matrix.codecube.dao.impl;
 
+import in.ac.manit.matrix.codecube.constants.UserConstants;
+import in.ac.manit.matrix.codecube.constants.UserConstants.TableColumns;
 import in.ac.manit.matrix.codecube.dao.UserDao;
 import in.ac.manit.matrix.codecube.enumerator.DataRowAccessLimit;
 import in.ac.manit.matrix.codecube.enumerator.Gender;
@@ -8,6 +10,7 @@ import in.ac.manit.matrix.codecube.model.User;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
@@ -16,6 +19,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import static in.ac.manit.matrix.codecube.constants.UserConstants.ModelFields;
@@ -34,10 +38,10 @@ public class UserDaoImpl implements UserDao {
     private SessionFactory sessionFactory;
 
     private final static String PASSWORD_UPDATE_QUERY_TEMPLATE =
-            String.format("UPDATE TABLE User SET password=:password WHERE {} = :{}", ModelFields.scholarNumber);
+            MessageFormat.format("UPDATE User SET password=:password WHERE {0}=:{0}", TableColumns.scholarNumber);
 
     private final static String PASSWORD_QUERY_TEMPLATE =
-            String.format("FROM User WHERE {} = :{}", ModelFields.scholarNumber);
+            MessageFormat.format("FROM User WHERE {0}=:{0}", TableColumns.scholarNumber);
 
     public void addUser(User user) {
         this.sessionFactory.getCurrentSession().persist(user);
@@ -101,7 +105,7 @@ public class UserDaoImpl implements UserDao {
 
     public void removeUser(Long scholarNumber) {
         Session session = this.sessionFactory.getCurrentSession();
-        User entryInDatabase = (User) session.load(User.class, new Long(scholarNumber));
+        User entryInDatabase = (User) session.get(User.class, new Long(scholarNumber));
         if (entryInDatabase != null) {
             session.delete(entryInDatabase);
         }
@@ -118,10 +122,10 @@ public class UserDaoImpl implements UserDao {
     public void setPassword(Long scholarNumber, String password) {
         this.sessionFactory
                 .getCurrentSession()
-                .createSQLQuery(PASSWORD_QUERY_TEMPLATE)
-                .setParameter(ModelFields.scholarNumber, scholarNumber)
+                .createSQLQuery(PASSWORD_UPDATE_QUERY_TEMPLATE)
+                .setParameter(TableColumns.scholarNumber, scholarNumber)
+                .setParameter("password", password)
                 .executeUpdate();
-
     }
 
     private <T> User getUserByField(String fieldName, T value) {

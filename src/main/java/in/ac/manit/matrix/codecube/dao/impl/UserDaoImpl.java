@@ -41,7 +41,7 @@ public class UserDaoImpl implements UserDao {
             MessageFormat.format("UPDATE User SET password=:password WHERE {0}=:{0}", TableColumns.scholarNumber);
 
     private final static String PASSWORD_QUERY_TEMPLATE =
-            MessageFormat.format("FROM User WHERE {0}=:{0}", TableColumns.scholarNumber);
+            MessageFormat.format("SELECT Password FROM User WHERE {0}=:{0}", TableColumns.scholarNumber);
 
     public void addUser(User user) {
         this.sessionFactory.getCurrentSession().persist(user);
@@ -112,10 +112,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     public String getPassword(Long scholarNumber) {
+        System.out.println(PASSWORD_QUERY_TEMPLATE);
         return (String) this.sessionFactory
                 .getCurrentSession()
-                .createQuery(PASSWORD_QUERY_TEMPLATE)
-                .setParameter(ModelFields.scholarNumber, scholarNumber)
+                .createSQLQuery(PASSWORD_QUERY_TEMPLATE)
+                .setParameter(TableColumns.scholarNumber, scholarNumber)
                 .uniqueResult();
     }
 

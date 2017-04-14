@@ -2,6 +2,7 @@ package in.ac.manit.matrix.codecube.controller;
 
 import in.ac.manit.matrix.codecube.bo.AuthenticationService;
 import in.ac.manit.matrix.codecube.bo.UserService;
+import in.ac.manit.matrix.codecube.constants.SessionConstants;
 import in.ac.manit.matrix.codecube.constants.UserConstants.ModelFields;
 
 import in.ac.manit.matrix.codecube.enumerator.DataRowAccessLimit;
@@ -43,7 +44,6 @@ public class UserController {
     private AuthenticationService authenticationService;
 
 
-
     @RequestMapping("/")
     public List<User> listUsers(@RequestParam(defaultValue = "0") Integer offset,
                                 @RequestParam(defaultValue = "SMALL") DataRowAccessLimit limit,
@@ -64,7 +64,7 @@ public class UserController {
     public User getUserByScholarNumber(@PathVariable Long scholarNumber, HttpServletRequest request) {
         HttpSession session = getSession(request);
         boolean removeAuthorizedFields = (session == null) || (scholarNumber == null)
-                || !scholarNumber.toString().equals(session.getAttribute("scholarNumber"));
+                || !scholarNumber.toString().equals(session.getAttribute(SessionConstants.KEY_SCHOLAR_NUMBER));
 
         User user = this.userService.getUser(scholarNumber);
         if (removeAuthorizedFields)
@@ -82,18 +82,17 @@ public class UserController {
         return null;
     }
 
-    @RequestMapping(value =  "/forgotpassword", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean forgotUserPassword(@RequestBody Long scholarNumber)
-    {
+    @RequestMapping(value = "/forgotpassword", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean forgotUserPassword(@RequestBody Long scholarNumber) {
         System.out.println(scholarNumber);
         return this.authenticationService.sendOtp(scholarNumber);
     }
 
     @RequestMapping(value = "/resetpassword", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean resetUserPassword(@RequestBody ResetPasswordStruct resetPasswordStruct)
-    {
+    public boolean resetUserPassword(@RequestBody ResetPasswordStruct resetPasswordStruct) {
 
-        return authenticationService.resetPassword(resetPasswordStruct.getScholarNumber(), resetPasswordStruct.getOtp(), resetPasswordStruct.getNewPassword());
+        return authenticationService.resetPassword(resetPasswordStruct.getScholarNumber(), resetPasswordStruct.getOtp(),
+                resetPasswordStruct.getNewPassword());
     }
 
 

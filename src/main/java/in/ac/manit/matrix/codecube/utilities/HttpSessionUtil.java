@@ -27,8 +27,8 @@ public class HttpSessionUtil {
         }
     }
 
-    public void setAttribute(String attribute, String key) {
-        this.httpServletRequest.getSession(false).setAttribute(attribute, key);
+    public void setAttribute(String key, Object value) {
+        this.httpServletRequest.getSession(false).setAttribute(key, value);
     }
 
     public void invalidateSession() {

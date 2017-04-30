@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.gmail.Gmail;
 import in.ac.manit.matrix.codecube.utilities.emailImpl.GmailImpl;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -18,6 +19,7 @@ public class SingletonObjects {
     private static EmailUtil emailUtil;
 
     private static GmailUtil gmailUtil;
+
 
     public static ObjectMapper getObjectMapper()
     {
@@ -56,4 +58,6 @@ public class SingletonObjects {
         }
         return gmailUtil;
     }
+
+
 }

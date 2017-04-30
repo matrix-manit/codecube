@@ -23,7 +23,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @RequestMapping(value = "/session", method = RequestMethod.PUT)
-    public Boolean createSession(HttpServletRequest request,
+    public Boolean createSession(HttpServletRequest httpServletRequest,
                                  @RequestParam(value = "scholar_number") Long scholarNo,
                                  @RequestParam(value = "raw_password") String rawPassword) {
         // TODO: handle the case if session is already established
@@ -31,20 +31,20 @@ public class AuthenticationController {
         Boolean isCredentialValid = this.authenticationService.isCredentialValid(scholarNo, rawPassword);
 
         if (isCredentialValid) {
-            HttpSessionUtil httpSessionUtil = new HttpSessionUtil(request);
-            httpSessionUtil.invalidateSession();
-            httpSessionUtil.createSession();
-            httpSessionUtil.setAttribute(SessionConstants.KEY_SCHOLAR_NUMBER, scholarNo);
+
+            HttpSessionUtil.invalidateSession(httpServletRequest);
+            HttpSessionUtil.createSession(httpServletRequest);
+            HttpSessionUtil.setAttribute(httpServletRequest,SessionConstants.KEY_SCHOLAR_NUMBER, scholarNo);
         }
 
         return isCredentialValid;
     }
 
     @RequestMapping(value = "/session", method = RequestMethod.GET)
-    public Long getSession(HttpServletRequest request, HttpServletResponse response) {
-        HttpSessionUtil httpSessionUtil = new HttpSessionUtil(request);
+    public Long getSession(HttpServletRequest httpServletRequest, HttpServletResponse response) {
+
         try {
-            return (Long) httpSessionUtil.getAttribute(SessionConstants.KEY_SCHOLAR_NUMBER);
+            return (Long) HttpSessionUtil.getAttribute(httpServletRequest,SessionConstants.KEY_SCHOLAR_NUMBER);
         } catch (InvalidSessionException e) {
             response.setStatus(404);
             return null;
@@ -52,10 +52,10 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/session", method = RequestMethod.DELETE)
-    public Boolean deleteSession(HttpServletRequest request) {
-        HttpSessionUtil httpSessionUtil = new HttpSessionUtil(request);
-        if (httpSessionUtil.sessionExists())
-            httpSessionUtil.invalidateSession();
+    public Boolean deleteSession(HttpServletRequest httpServletRequest) {
+
+        if (HttpSessionUtil.sessionExists(httpServletRequest))
+            HttpSessionUtil.invalidateSession(httpServletRequest);
 
         return true;
     }

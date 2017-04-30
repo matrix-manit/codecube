@@ -6,10 +6,7 @@ import in.ac.manit.matrix.codecube.exception.InvalidSessionException;
 import in.ac.manit.matrix.codecube.utilities.HttpSessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,17 +21,18 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/session", method = RequestMethod.PUT)
     public Boolean createSession(HttpServletRequest httpServletRequest,
-                                 @RequestParam(value = "scholar_number") Long scholarNo,
-                                 @RequestParam(value = "raw_password") String rawPassword) {
+                                 @RequestBody CredentialStruct credentialStruct) {
         // TODO: handle the case if session is already established
 
-        Boolean isCredentialValid = this.authenticationService.isCredentialValid(scholarNo, rawPassword);
+        Boolean isCredentialValid = this.authenticationService.isCredentialValid(
+                credentialStruct.getScholarNumber(), credentialStruct.getPassword());
 
         if (isCredentialValid) {
 
             HttpSessionUtil.invalidateSession(httpServletRequest);
             HttpSessionUtil.createSession(httpServletRequest);
-            HttpSessionUtil.setAttribute(httpServletRequest,SessionConstants.KEY_SCHOLAR_NUMBER, scholarNo);
+            HttpSessionUtil.setAttribute(httpServletRequest,SessionConstants.KEY_SCHOLAR_NUMBER,
+                    credentialStruct.getScholarNumber());
         }
 
         return isCredentialValid;
